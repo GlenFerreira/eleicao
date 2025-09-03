@@ -1,0 +1,58 @@
+# ========================================
+# GIT ATTRIBUTES - SaaS Raed Eleição
+# ========================================
+
+# Arquivos de texto
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Arquivos de configuração
+*.config.js text eol=lf
+*.config.ts text eol=lf
+*.config.json text eol=lf
+
+# Arquivos de estilo
+*.css text eol=lf
+*.scss text eol=lf
+*.sass text eol=lf
+
+# Arquivos HTML
+*.html text eol=lf
+
+# Arquivos de imagem (binários)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg text eol=lf
+
+# Arquivos de fonte
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+
+# Arquivos de vídeo/áudio
+*.mp4 binary
+*.mp3 binary
+*.wav binary
+
+# Arquivos de arquivo
+*.zip binary
+*.tar binary
+*.gz binary
+
+# Arquivos de documentação
+*.pdf binary
+
+# Arquivos de configuração do sistema
+.gitignore text eol=lf
+.gitattributes text eol=lf

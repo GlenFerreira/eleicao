@@ -1,0 +1,30 @@
+{
+  "name": "raed-saas",
+  "version": "1.0.0",
+  "description": "SaaS Raed - Sistema de Questionários",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "clean": "turbo run clean",
+    "type-check": "turbo run type-check",
+    "web:dev": "turbo run dev --filter=web --port 3003",
+    "admin:dev": "turbo run dev --filter=admin",
+    "api:dev": "turbo run dev --filter=api"
+  },
+  "devDependencies": {
+    "turbo": "^1.12.0",
+    "typescript": "^5.3.0",
+    "@types/node": "^20.10.0"
+  },
+  "packageManager": "pnpm@8.15.0",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}
