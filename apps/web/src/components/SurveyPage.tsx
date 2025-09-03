@@ -37,6 +37,7 @@ interface Survey {
 interface SurveyResponse {
   surveyId: string
   companyId: string
+  city?: string
   contactInfo: {
     name?: string
     email?: string
@@ -62,6 +63,7 @@ const SurveyPage: React.FC = () => {
   const [formData, setFormData] = useState<SurveyResponse>({
     surveyId: '',
     companyId: '',
+    city: '',
     contactInfo: {},
     answers: []
   })
@@ -164,6 +166,13 @@ const SurveyPage: React.FC = () => {
     }))
   }
 
+  const handleCityChange = (value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      city: value
+    }))
+  }
+
   const handleAnswerChange = (questionId: string, answer: string | string[]) => {
     setFormData(prev => {
       const existingAnswerIndex = prev.answers.findIndex(a => a.questionId === questionId)
@@ -178,12 +187,31 @@ const SurveyPage: React.FC = () => {
     })
   }
 
+  const handleMultipleChoiceChange = (questionId: string, optionValue: string) => {
+    setFormData(prev => {
+      const existingAnswerIndex = prev.answers.findIndex(a => a.questionId === questionId)
+      
+      if (existingAnswerIndex >= 0) {
+        const newAnswers = [...prev.answers]
+        newAnswers[existingAnswerIndex] = { questionId, answer: [optionValue] } // Enviar como array
+        return { ...prev, answers: newAnswers }
+      } else {
+        return { ...prev, answers: [...prev.answers, { questionId, answer: [optionValue] }] }
+      }
+    })
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     if (!survey || !companySlug) return
     
     // Validações
+    if (!formData.city?.trim()) {
+      alert('Por favor, informe sua cidade.')
+      return
+    }
+
     const requiredQuestions = survey.questions.filter(q => q.isRequired)
     const answeredQuestions = formData.answers.filter(a => 
       a.answer && (typeof a.answer === 'string' ? a.answer.trim() : a.answer.length > 0)
@@ -211,7 +239,8 @@ const SurveyPage: React.FC = () => {
       // Preparar dados para a API
       const submitData = {
         contactInfo: formData.contactInfo,
-        answers: formData.answers
+        answers: formData.answers,
+        city: formData.city
       }
       
       // Enviar para a API
@@ -409,73 +438,76 @@ const SurveyPage: React.FC = () => {
             )}
           </div>
 
-        {/* Contact Info Fields */}
-        {(survey.collectContactInfo.name || survey.collectContactInfo.email || 
-          survey.collectContactInfo.phone || survey.collectContactInfo.newsletter) && (
+          {/* City Field */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Informações de Contato</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {survey.collectContactInfo.name && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nome {survey.questions.some(q => q.isRequired) && <span className="text-red-500">*</span>}
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.contactInfo.name || ''}
-                    onChange={(e) => handleContactInfoChange('name', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Seu nome completo"
-                    required={survey.collectContactInfo.name}
-                  />
-                </div>
-              )}
-              
-              {survey.collectContactInfo.email && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email {survey.questions.some(q => q.isRequired) && <span className="text-red-500">*</span>}
-                  </label>
-                  <input
-                    type="email"
-                    value={formData.contactInfo.email || ''}
-                    onChange={(e) => handleContactInfoChange('email', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="seu@email.com"
-                    required={survey.collectContactInfo.email}
-                  />
-                </div>
-              )}
-              
-              {survey.collectContactInfo.phone && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Telefone</label>
-                  <input
-                    type="tel"
-                    value={formData.contactInfo.phone || ''}
-                    onChange={(e) => handleContactInfoChange('phone', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="(11) 99999-9999"
-                  />
-                </div>
-              )}
-              
-              {survey.collectContactInfo.newsletter && (
-                <div className="md:col-span-2">
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={formData.contactInfo.newsletter || false}
-                      onChange={(e) => handleContactInfoChange('newsletter', e.target.checked)}
-                      className="mr-2"
-                    />
-                    <span className="text-sm text-gray-700">Quero receber novidades por email</span>
-                  </label>
-                </div>
-              )}
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Localização</h3>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Cidade <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={formData.city || ''}
+                onChange={(e) => handleCityChange(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Digite sua cidade"
+                required
+              />
             </div>
           </div>
-        )}
+
+          {/* Contact Information Collection */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Informações de Contato (Opcional)</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Nome</label>
+                <input
+                  type="text"
+                  value={formData.contactInfo.name || ''}
+                  onChange={(e) => handleContactInfoChange('name', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Seu nome completo"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <input
+                  type="email"
+                  value={formData.contactInfo.email || ''}
+                  onChange={(e) => handleContactInfoChange('email', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="seu@email.com"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Telefone</label>
+                <input
+                  type="tel"
+                  value={formData.contactInfo.phone || ''}
+                  onChange={(e) => handleContactInfoChange('phone', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="(11) 99999-9999"
+                />
+              </div>
+              
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={formData.contactInfo.newsletter || false}
+                  onChange={(e) => handleContactInfoChange('newsletter', e.target.checked)}
+                  className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <label className="ml-2 block text-sm text-gray-700">
+                  Quero receber novidades por email
+                </label>
+              </div>
+            </div>
+          </div>
+
+
 
         {/* Questions */}
         <div className="space-y-6">
@@ -509,8 +541,8 @@ const SurveyPage: React.FC = () => {
                         type="radio"
                         name={`question_${question.id}`}
                         value={option.optionValue}
-                        checked={formData.answers.find(a => a.questionId === question.id)?.answer === option.optionValue}
-                        onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+                        checked={formData.answers.find(a => a.questionId === question.id)?.answer?.includes?.(option.optionValue) || false}
+                        onChange={(e) => handleMultipleChoiceChange(question.id, e.target.value)}
                         className="mr-3"
                         required={question.isRequired}
                       />
@@ -521,8 +553,8 @@ const SurveyPage: React.FC = () => {
               )}
 
               {question.questionType === 'rating' && (
-                <div className="flex space-x-4">
-                  {[1, 2, 3, 4, 5].map((rating) => (
+                <div className="flex space-x-2 justify-center flex-wrap">
+                  {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
                     <label key={rating} className="flex flex-col items-center">
                       <input
                         type="radio"

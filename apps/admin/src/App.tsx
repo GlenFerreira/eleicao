@@ -4,6 +4,7 @@ import CompanyAdminDashboard from './components/CompanyAdminDashboard'
 import CreateSurvey from './components/CreateSurvey'
 import SurveyList from './components/SurveyList'
 import SurveyResponses from './components/SurveyResponses'
+import SurveyAnalytics from './components/SurveyAnalytics'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
@@ -30,6 +31,11 @@ function App() {
           <Route path="/surveys/:surveyId/responses" element={
             <ProtectedRoute>
               <SurveyResponses />
+            </ProtectedRoute>
+          } />
+          <Route path="/surveys/:surveyId/analytics" element={
+            <ProtectedRoute>
+              <SurveyAnalytics />
             </ProtectedRoute>
           } />
           <Route path="/" element={<Navigate to="/login" replace />} />

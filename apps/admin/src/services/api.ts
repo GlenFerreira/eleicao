@@ -73,6 +73,13 @@ export const surveyService = {
   // Obter respostas de um questionário
   async getSurveyResponses(id: string) {
     return apiRequest(`/surveys/${id}/responses`)
+  },
+
+  // Excluir todas as respostas de um questionário
+  async deleteAllResponses(id: string) {
+    return apiRequest(`/surveys/${id}/responses`, {
+      method: 'DELETE'
+    })
   }
 }
 
@@ -84,7 +91,19 @@ export const authService = {
   }
 }
 
+// Serviços de Analytics
+export const analyticsService = {
+  // Obter analytics de um questionário
+  async getSurveyAnalytics(surveyId: string, city?: string) {
+    const url = city && city !== 'all' 
+      ? `/analytics/${surveyId}?city=${encodeURIComponent(city)}`
+      : `/analytics/${surveyId}`
+    return apiRequest(url)
+  }
+}
+
 export default {
   surveyService,
-  authService
+  authService,
+  analyticsService
 }

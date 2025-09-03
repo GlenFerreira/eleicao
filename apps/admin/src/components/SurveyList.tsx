@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Plus, Edit, Eye, BarChart3, Trash2, Copy, ExternalLink, FileText } from 'lucide-react'
+import { ArrowLeft, Plus, Edit, Eye, BarChart3, Trash2, Copy, ExternalLink, FileText, Users } from 'lucide-react'
 import { surveyService } from '../services/api'
 
 interface Survey {
@@ -55,8 +55,34 @@ const SurveyList: React.FC = () => {
     console.log('Editar questionário:', surveyId)
   }
 
+  const handleViewAnalytics = (surveyId: string) => {
+    navigate(`/surveys/${surveyId}/analytics`)
+  }
+
   const handleViewResponses = (surveyId: string) => {
     navigate(`/surveys/${surveyId}/responses`)
+  }
+
+  const handleDeleteAllResponses = async (surveyId: string, surveyTitle: string) => {
+    const confirmed = window.confirm(
+      `Tem certeza que deseja excluir TODAS as respostas do questionário "${surveyTitle}"?\n\nEsta ação não pode ser desfeita.`
+    )
+    
+    if (!confirmed) return
+
+    try {
+      const response = await surveyService.deleteAllResponses(surveyId)
+      
+      if (response.success) {
+        alert(response.message || 'Respostas excluídas com sucesso!')
+        loadSurveys() // Recarregar a lista
+      } else {
+        alert('Erro ao excluir respostas')
+      }
+    } catch (error: any) {
+      console.error('Erro ao excluir respostas:', error)
+      alert(`Erro ao excluir respostas: ${error.message}`)
+    }
   }
 
   const handleToggleActive = async (surveyId: string) => {
@@ -270,11 +296,19 @@ const SurveyList: React.FC = () => {
                       </button>
                       
                       <button
-                        onClick={() => handleViewResponses(survey.id)}
+                        onClick={() => handleViewAnalytics(survey.id)}
                         className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-md"
-                        title="Ver respostas"
+                        title="Ver analytics"
                       >
                         <BarChart3 className="h-4 w-4" />
+                      </button>
+                      
+                      <button
+                        onClick={() => handleViewResponses(survey.id)}
+                        className="p-2 text-gray-400 hover:text-orange-600 hover:bg-orange-50 rounded-md"
+                        title="Ver respostas"
+                      >
+                        <Users className="h-4 w-4" />
                       </button>
                       
                       <button
@@ -296,6 +330,16 @@ const SurveyList: React.FC = () => {
                       >
                         <Eye className="h-4 w-4" />
                       </button>
+                      
+                      {survey.responsesCount > 0 && (
+                        <button
+                          onClick={() => handleDeleteAllResponses(survey.id, survey.title)}
+                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md"
+                          title="Excluir todas as respostas"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
                       
                       <button
                         onClick={() => handleDeleteSurvey(survey.id)}

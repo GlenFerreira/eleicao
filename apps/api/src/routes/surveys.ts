@@ -62,20 +62,38 @@ router.get('/', async (req: any, res, next) => {
 
     console.log(`Encontrados ${surveys?.length || 0} questionários`)
 
-    // Por enquanto, retornar apenas os dados básicos sem estatísticas
-    const processedSurveys = surveys?.map(survey => ({
-      id: survey.id,
-      title: survey.title,
-      description: survey.description,
-      isActive: survey.is_active,
-      createdAt: survey.created_at,
-      updatedAt: survey.updated_at,
-      questionsCount: 0, // Temporariamente fixo
-      responsesCount: 0,  // Temporariamente fixo
-      collectContactInfo: {}, // Valor padrão vazio
-      companyId: survey.company_id,
-      companyName: (survey as any).companies?.name || 'PSB' // Nome da empresa
-    })) || []
+    // Buscar contagens reais para cada questionário
+    const processedSurveys = await Promise.all(
+      surveys?.map(async (survey) => {
+        // Contar perguntas
+        const { count: questionsCount } = await supabase
+          .from('questions')
+          .select('*', { count: 'exact', head: true })
+          .eq('survey_id', survey.id)
+          .is('deleted_at', null)
+
+        // Contar respostas
+        const { count: responsesCount } = await supabase
+          .from('survey_responses')
+          .select('*', { count: 'exact', head: true })
+          .eq('survey_id', survey.id)
+          .is('deleted_at', null)
+
+        return {
+          id: survey.id,
+          title: survey.title,
+          description: survey.description,
+          isActive: survey.is_active,
+          createdAt: survey.created_at,
+          updatedAt: survey.updated_at,
+          questionsCount: questionsCount || 0,
+          responsesCount: responsesCount || 0,
+          collectContactInfo: {}, // Valor padrão vazio
+          companyId: survey.company_id,
+          companyName: (survey as any).companies?.name || 'PSB' // Nome da empresa
+        }
+      }) || []
+    )
 
     res.json({
       success: true,
@@ -186,7 +204,7 @@ router.post('/', async (req: any, res, next) => {
   try {
     console.log('Recebendo dados para criar questionário:', req.body)
     
-    const { title, description, isActive, collectContactInfo, questions } = req.body
+    const { title, description, isActive, federalIdeology, stateIdeology, collectContactInfo, questions } = req.body
 
     if (!title || !questions || !Array.isArray(questions)) {
       throw createError('Dados inválidos', 400)
@@ -218,6 +236,8 @@ router.post('/', async (req: any, res, next) => {
         title,
         description: description || '',
         is_active: isActive !== undefined ? isActive : true,
+        federal_ideology: federalIdeology || null,
+        state_ideology: stateIdeology || null,
         company_id: companyId
       })
       .select()
@@ -582,11 +602,20 @@ router.get('/:id/responses', async (req: any, res, next) => {
         contact_email,
         contact_phone,
         wants_newsletter,
-        question3_answer,
-        question4_answer,
-        question5_answer,
-        question6_answer,
-        questionn_answer
+        city,
+        question_answers(
+          id,
+          question_id,
+          answer_text,
+          selected_options,
+          rating_value,
+          questions(
+            id,
+            question_text,
+            question_type,
+            order_index
+          )
+        )
       `)
       .eq('survey_id', surveyId)
       .is('deleted_at', null)
@@ -598,7 +627,7 @@ router.get('/:id/responses', async (req: any, res, next) => {
 
     // Processar respostas para um formato mais amigável
     const processedResponses = responses?.map(response => {
-      const answers = []
+      const answers: any[] = []
       
       // Adicionar informações de contato
       if (response.contact_name || response.contact_email || response.contact_phone) {
@@ -611,33 +640,51 @@ router.get('/:id/responses', async (req: any, res, next) => {
           answerText: `Nome: ${response.contact_name || 'N/A'}, Email: ${response.contact_email || 'N/A'}, Telefone: ${response.contact_phone || 'N/A'}, Newsletter: ${response.wants_newsletter ? 'Sim' : 'Não'}`
         })
       }
+
+      // Adicionar cidade
+      if (response.city) {
+        answers.push({
+          id: 'city_info',
+          questionId: 'city_info',
+          questionText: 'Cidade',
+          questionType: 'text',
+          questionOrder: 2,
+          answerText: response.city
+        })
+      }
       
-      // Adicionar respostas das perguntas
-      const questionFields = [
-        { field: 'question3_answer', order: 3 },
-        { field: 'question4_answer', order: 4 },
-        { field: 'question5_answer', order: 5 },
-        { field: 'question6_answer', order: 6 },
-        { field: 'questionn_answer', order: 7 }
-      ]
-      
-      questionFields.forEach(({ field, order }) => {
-        if (response[field]) {
-          answers.push({
-            id: field,
-            questionId: field,
-            questionText: `Pergunta ${order}`,
-            questionType: 'text',
-            questionOrder: order,
-            answerText: response[field]
-          })
-        }
-      })
+      // Adicionar respostas das perguntas da nova estrutura
+      if (response.question_answers && Array.isArray(response.question_answers)) {
+        response.question_answers.forEach((qa: any) => {
+          if (qa.questions) {
+            let answerText = ''
+            
+            if (qa.answer_text) {
+              answerText = qa.answer_text
+            } else if (qa.selected_options && Array.isArray(qa.selected_options)) {
+              answerText = qa.selected_options.join(', ')
+            } else if (qa.rating_value !== null) {
+              answerText = qa.rating_value.toString()
+            }
+            
+            if (answerText) {
+              answers.push({
+                id: qa.id,
+                questionId: qa.question_id,
+                questionText: qa.questions.question_text,
+                questionType: qa.questions.question_type,
+                questionOrder: qa.questions.order_index,
+                answerText: answerText
+              })
+            }
+          }
+        })
+      }
       
       return {
         id: response.id,
         submittedAt: response.completed_at || response.created_at,
-        answers: answers.sort((a, b) => a.questionOrder - b.questionOrder)
+        answers: answers.sort((a: any, b: any) => a.questionOrder - b.questionOrder)
       }
     }) || []
 
@@ -652,6 +699,74 @@ router.get('/:id/responses', async (req: any, res, next) => {
         responses: processedResponses,
         totalResponses: processedResponses.length
       }
+    })
+
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Excluir todas as respostas de um questionário
+router.delete('/:id/responses', async (req: any, res, next) => {
+  try {
+    const { id: surveyId } = req.params
+
+    // Verificar se o questionário existe
+    const { data: survey, error: surveyError } = await supabase
+      .from('surveys')
+      .select('id, title')
+      .eq('id', surveyId)
+      .is('deleted_at', null)
+      .single()
+
+    if (surveyError || !survey) {
+      throw createError('Questionário não encontrado', 404)
+    }
+
+    // Buscar todas as respostas do questionário
+    const { data: responses, error: responsesError } = await supabase
+      .from('survey_responses')
+      .select('id')
+      .eq('survey_id', surveyId)
+      .is('deleted_at', null)
+
+    if (responsesError) {
+      throw createError('Erro ao buscar respostas', 500)
+    }
+
+    if (!responses || responses.length === 0) {
+      return res.json({
+        success: true,
+        message: 'Nenhuma resposta encontrada para excluir',
+        deletedCount: 0
+      })
+    }
+
+    // Excluir todas as respostas das perguntas primeiro
+    const responseIds = responses.map(r => r.id)
+    const { error: answersError } = await supabase
+      .from('question_answers')
+      .delete()
+      .in('survey_response_id', responseIds)
+
+    if (answersError) {
+      throw createError('Erro ao excluir respostas das perguntas', 500)
+    }
+
+    // Excluir as respostas do questionário
+    const { error: deleteError } = await supabase
+      .from('survey_responses')
+      .delete()
+      .eq('survey_id', surveyId)
+
+    if (deleteError) {
+      throw createError('Erro ao excluir respostas do questionário', 500)
+    }
+
+    res.json({
+      success: true,
+      message: `${responses.length} respostas excluídas com sucesso`,
+      deletedCount: responses.length
     })
 
   } catch (error) {

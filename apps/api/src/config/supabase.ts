@@ -7,8 +7,9 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-// Caminho relativo para o .env (mais flexível)
-const envPath = path.join(__dirname, '../../../.env')
+// Caminho relativo para o .env na RAIZ do monorepo
+// __dirname está em apps/api/src/config, então subimos 4 níveis
+const envPath = path.join(__dirname, '../../../../.env')
 dotenv.config({ path: envPath })
 
 const supabaseUrl = process.env.SUPABASE_URL!

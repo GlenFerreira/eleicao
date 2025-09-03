@@ -18,6 +18,8 @@ export interface SurveyForm {
   title: string
   description: string
   isActive: boolean
+  federalIdeology: 'left' | 'center' | 'right' | ''
+  stateIdeology: 'left' | 'center' | 'right' | ''
   questions: Question[]
   collectContactInfo: {
     name: boolean
@@ -33,6 +35,8 @@ export interface Survey {
   title: string
   description: string
   is_active: boolean
+  federal_ideology: 'left' | 'center' | 'right' | null
+  state_ideology: 'left' | 'center' | 'right' | null
   created_at: string
   updated_at: string
   deleted_at: string | null

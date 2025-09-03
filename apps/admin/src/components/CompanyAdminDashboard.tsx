@@ -1,9 +1,41 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { FileText, Users, BarChart3, Settings, LogOut, Plus } from 'lucide-react'
+import { FileText, Users, BarChart3, LogOut, Plus } from 'lucide-react'
+import { surveyService } from '../services/api'
 
 const CompanyAdminDashboard: React.FC = () => {
   const navigate = useNavigate()
+  const [stats, setStats] = useState({
+    totalSurveys: 0,
+    totalResponses: 0,
+    activeSurveys: 0
+  })
+  const [loading, setLoading] = useState(true)
+
+  // Carregar estatísticas
+  useEffect(() => {
+    loadStats()
+  }, [])
+
+  const loadStats = async () => {
+    try {
+      setLoading(true)
+      const response = await surveyService.getSurveys()
+      
+      if (response.success) {
+        const surveys = response.data.surveys
+        setStats({
+          totalSurveys: surveys.length,
+          totalResponses: surveys.reduce((sum: number, survey: any) => sum + survey.responsesCount, 0),
+          activeSurveys: surveys.filter((survey: any) => survey.isActive).length
+        })
+      }
+    } catch (error) {
+      console.error('Erro ao carregar estatísticas:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleLogout = () => {
     localStorage.removeItem('authToken')
@@ -69,7 +101,9 @@ const CompanyAdminDashboard: React.FC = () => {
                   <FileText className="h-8 w-8 text-blue-600" />
                   <div className="ml-4">
                     <p className="text-sm font-medium text-blue-600">Questionários</p>
-                    <p className="text-2xl font-bold text-blue-900">0</p>
+                    <p className="text-2xl font-bold text-blue-900">
+                      {loading ? '...' : stats.totalSurveys}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -79,7 +113,9 @@ const CompanyAdminDashboard: React.FC = () => {
                   <Users className="h-8 w-8 text-green-600" />
                   <div className="ml-4">
                     <p className="text-sm font-medium text-green-600">Respostas</p>
-                    <p className="text-2xl font-bold text-green-900">0</p>
+                    <p className="text-2xl font-bold text-green-900">
+                      {loading ? '...' : stats.totalResponses}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -88,8 +124,10 @@ const CompanyAdminDashboard: React.FC = () => {
                 <div className="flex items-center">
                   <BarChart3 className="h-8 w-8 text-purple-600" />
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-purple-600">Taxa de Resposta</p>
-                    <p className="text-2xl font-bold text-purple-900">0%</p>
+                    <p className="text-sm font-medium text-purple-600">Ativos</p>
+                    <p className="text-2xl font-bold text-purple-900">
+                      {loading ? '...' : stats.activeSurveys}
+                    </p>
                   </div>
                 </div>
               </div>

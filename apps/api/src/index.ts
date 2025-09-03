@@ -8,13 +8,15 @@ import authRoutes from './routes/auth'
 import adminRoutes from './routes/admin'
 import surveyRoutes from './routes/surveys'
 import publicRoutes from './routes/public'
+import analyticsRoutes from './routes/analytics'
 import { errorHandler } from './middleware/errorHandler'
 import { authMiddleware } from './middleware/auth'
 
 // Carregar .env da raiz do projeto (ES modules)
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-dotenv.config({ path: path.resolve(__dirname, '../../.env') })
+// Carregar .env da raiz do monorepo (apps/api/src -> raiz: ../../../.env)
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') })
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -37,6 +39,7 @@ app.use('/api/public', publicRoutes)
 // Rotas protegidas
 app.use('/api/admin', authMiddleware, adminRoutes)
 app.use('/api/surveys', surveyRoutes) // Removido authMiddleware temporariamente
+app.use('/api/analytics', analyticsRoutes) // Removido authMiddleware temporariamente
 
 // Health check
 app.get('/api/health', (req, res) => {

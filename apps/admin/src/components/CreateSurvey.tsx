@@ -10,6 +10,8 @@ const CreateSurvey: React.FC = () => {
     title: '',
     description: '',
     isActive: true,
+    federalIdeology: '',
+    stateIdeology: '',
     questions: [],
     collectContactInfo: {
       name: false,
@@ -22,20 +24,7 @@ const CreateSurvey: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<'form' | 'preview'>('form')
   const [submitting, setSubmitting] = useState(false)
 
-  const addQuestion = () => {
-    const newQuestion: Question = {
-      id: `q_${Date.now()}`,
-      questionText: '',
-      questionType: 'text',
-      isRequired: true,
-      orderIndex: surveyForm.questions.length + 1,
-      options: []
-    }
-    setSurveyForm(prev => ({
-      ...prev,
-      questions: [...prev.questions, newQuestion]
-    }))
-  }
+
 
   const addQuestionWithOptions = (type: 'text' | 'multiple_choice' | 'rating') => {
     const newQuestion: Question = {
@@ -159,6 +148,8 @@ const CreateSurvey: React.FC = () => {
         title: surveyForm.title.trim(),
         description: surveyForm.description.trim(),
         isActive: surveyForm.isActive,
+        federalIdeology: surveyForm.federalIdeology || null,
+        stateIdeology: surveyForm.stateIdeology || null,
         collectContactInfo: surveyForm.collectContactInfo,
         questions: surveyForm.questions.map((q, index) => ({
           questionText: q.questionText.trim(),
@@ -283,7 +274,7 @@ const CreateSurvey: React.FC = () => {
 
             {/* Questions */}
             <div className="space-y-6">
-              {surveyForm.questions.map((question, index) => (
+              {surveyForm.questions.map((question) => (
                 <div key={question.id} className="p-6 border border-gray-200 rounded-lg">
                   <div className="flex items-start justify-between mb-4">
                     <h4 className="text-lg font-medium text-gray-900">
@@ -318,8 +309,8 @@ const CreateSurvey: React.FC = () => {
                   )}
 
                   {question.questionType === 'rating' && (
-                    <div className="flex space-x-2">
-                      {[1, 2, 3, 4, 5].map((rating) => (
+                    <div className="flex space-x-1 flex-wrap">
+                      {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
                         <label key={rating} className="flex items-center">
                           <input
                             type="radio"
@@ -437,6 +428,61 @@ const CreateSurvey: React.FC = () => {
             </div>
           </div>
 
+          {/* Political Ideology Configuration */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">Configuração de Ideologia Política</h2>
+            <p className="text-sm text-gray-600 mb-6">
+              Defina a ideologia dos governos para análise automática das respostas. 
+              Isso será usado para classificar a tendência política dos respondentes.
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Ideologia do Governo Federal
+                </label>
+                <select
+                  value={surveyForm.federalIdeology}
+                  onChange={(e) => setSurveyForm(prev => ({ 
+                    ...prev, 
+                    federalIdeology: e.target.value as 'left' | 'center' | 'right' | ''
+                  }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Selecione...</option>
+                  <option value="left">Esquerda</option>
+                  <option value="center">Centro</option>
+                  <option value="right">Direita</option>
+                </select>
+                <p className="text-xs text-gray-500 mt-1">
+                  Ex: Lula (Esquerda), Bolsonaro (Direita)
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Ideologia do Governo Estadual
+                </label>
+                <select
+                  value={surveyForm.stateIdeology}
+                  onChange={(e) => setSurveyForm(prev => ({ 
+                    ...prev, 
+                    stateIdeology: e.target.value as 'left' | 'center' | 'right' | ''
+                  }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Selecione...</option>
+                  <option value="left">Esquerda</option>
+                  <option value="center">Centro</option>
+                  <option value="right">Direita</option>
+                </select>
+                <p className="text-xs text-gray-500 mt-1">
+                  Ex: Governador do seu estado
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Contact Info Collection */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-6">Coleta de Informações de Contato</h2>
@@ -535,7 +581,7 @@ const CreateSurvey: React.FC = () => {
               </div>
             ) : (
               <div className="space-y-6">
-                {surveyForm.questions.map((question, index) => (
+                {surveyForm.questions.map((question) => (
                   <div key={question.id} className="p-6 border border-gray-200 rounded-lg bg-gray-50">
                     <div className="flex items-start justify-between mb-4">
                       <h4 className="text-lg font-medium text-gray-900">
@@ -579,7 +625,7 @@ const CreateSurvey: React.FC = () => {
                         >
                           <option value="text">Dissertativa</option>
                           <option value="multiple_choice">Múltipla Escolha</option>
-                          <option value="rating">Avaliação (1-5)</option>
+                          <option value="rating">Avaliação (0-10)</option>
                         </select>
                       </div>
                     </div>

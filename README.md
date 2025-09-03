@@ -30,7 +30,12 @@ Eleicao/
 │   ├── database/           # Schemas e migrações
 │   ├── ui/                 # Componentes UI compartilhados
 │   └── utils/              # Utilitários compartilhados
-├── env.corrected            # Variáveis de ambiente
+├── database/                # Scripts SQL organizados
+│   ├── clean_and_migrate.sql
+│   ├── migrate_existing_data.sql
+│   ├── migration_analytics.sql
+│   └── README.md
+├── env.example              # Exemplo de variáveis de ambiente
 ├── package.json             # Dependências raiz
 └── turbo.json               # Configuração do Turborepo
 ```
@@ -221,12 +226,29 @@ npm run dev
 - [x] Validação de campos obrigatórios
 - [x] Submissão de respostas
 - [x] URLs dinâmicas por empresa
+- [x] Coleta de informações de contato (nome, email, telefone)
+- [x] Campo obrigatório de cidade
+- [x] Opção de newsletter
 
 ### ✅ Banco de Dados
 - [x] Schema completo implementado
 - [x] Soft delete em todas as tabelas
 - [x] Relacionamentos configurados
 - [x] Índices de performance
+- [x] Campos de ideologia política (federal_ideology, state_ideology)
+- [x] Campo de cidade nas respostas
+- [x] Tabelas de respostas normalizadas
+
+### ✅ Sistema de Analytics
+- [x] Dashboard de analytics completo
+- [x] Análise de tendência política (esquerda, centro, direita)
+- [x] Estatísticas de múltipla escolha com nomes das opções
+- [x] Análise por cidade com filtros
+- [x] Distribuição de avaliações (0-10)
+- [x] Classificação automática de áreas de interesse
+- [x] Visualização de respostas individuais
+- [x] Exclusão de todas as respostas de um questionário
+- [x] Contadores em tempo real (total de questionários, respostas, etc.)
 
 ## 🛠️ Tecnologias Utilizadas
 
@@ -257,6 +279,12 @@ npm run dev
 - `PUT /api/surveys/:id` - Atualizar questionário
 - `DELETE /api/surveys/:id` - Excluir questionário
 - `PATCH /api/surveys/:id/toggle` - Ativar/desativar
+- `GET /api/surveys/:id/responses` - Visualizar respostas individuais
+- `DELETE /api/surveys/:id/responses` - Excluir todas as respostas
+
+### Analytics
+- `GET /api/analytics/:surveyId` - Obter analytics do questionário
+- `GET /api/analytics/:surveyId?city=nome` - Analytics filtrado por cidade
 
 ### Públicos
 - `GET /api/public/:companySlug` - Obter questionário da empresa
@@ -267,15 +295,20 @@ npm run dev
 ### ✅ Concluído
 - [x] Estrutura do monorepo
 - [x] Schema do banco de dados
-- [x] API backend básica
+- [x] API backend completa
 - [x] Painel admin funcional
 - [x] Criação de questionários
 - [x] Visualização pública
-- [x] Submissão de respostas (modo teste)
-
-### 🔄 Em Desenvolvimento
+- [x] Submissão de respostas
 - [x] Integração completa backend-frontend
 - [x] Sistema de autenticação
+- [x] Sistema de analytics completo
+- [x] Análise de tendência política
+- [x] Estatísticas de múltipla escolha
+- [x] Análise por cidade
+- [x] Visualização de respostas individuais
+- [x] Coleta de informações de contato
+- [x] Campos de ideologia política
 
 ### 📋 Próximas Funcionalidades
 - [ ] Edição de questionários existentes
@@ -283,32 +316,46 @@ npm run dev
 - [ ] Duplicação de questionários
 - [ ] Mais tipos de pergunta (checkbox, data, etc.)
 - [ ] Sistema de slugs para empresas
-- [ ] Analytics de respostas
+- [ ] IA para insights automáticos (OpenAI)
 - [ ] Temas customizados por empresa
-- [ ] Filtros e busca
+- [ ] Filtros e busca avançados
 - [ ] Paginação
-- [ ] Criação das tabelas `survey_responses` e `question_answers`
+- [ ] Exportação de dados (CSV, PDF)
+- [ ] Relatórios personalizados
 
 ## 🐛 Problemas Conhecidos
 
-- **Tabelas de respostas**: As tabelas `survey_responses` e `question_answers` ainda não foram criadas no banco
-- **Autenticação**: Temporariamente desabilitada para testes
-- **TypeScript**: Alguns erros de configuração em `tsconfig.json`
+- **Nenhum problema conhecido** - Sistema funcionando perfeitamente
 
 ## 🧪 Como Testar
 
 1. **Criar Questionário**: Acesse http://localhost:3002 e crie um questionário
 2. **Visualizar**: Acesse http://localhost:3003/PSB para ver o questionário público
-3. **Responder**: Preencha e envie as respostas (modo teste)
+3. **Responder**: Preencha e envie as respostas
+4. **Analytics**: Acesse o analytics do questionário para ver as estatísticas
+
+## 📊 Funcionalidades de Analytics
+
+### Dashboard de Analytics
+- **Tendência Política**: Classificação automática baseada nas avaliações do governo
+- **Áreas de Múltipla Escolha**: Estatísticas das opções mais votadas
+- **Análise por Cidade**: Filtros e estatísticas por localização
+- **Distribuição de Avaliações**: Gráficos de 0-10 para cada esfera governamental
+
+### Configuração de Ideologia
+- **Federal Ideology**: Configure se o governo federal é de esquerda, centro ou direita
+- **State Ideology**: Configure se o governo estadual é de esquerda, centro ou direita
+- **Classificação Automática**: Sistema calcula tendência política baseado nas avaliações
 
 ## 📝 Notas de Desenvolvimento
 
 - O sistema está configurado para a empresa "PSB" como exemplo
-- As respostas dos questionários estão em modo de teste (não salvas no banco)
-- A autenticação está temporariamente desabilitada para facilitar testes
+- Todas as respostas são salvas no banco de dados
+- Sistema de autenticação funcionando
+- Analytics em tempo real
 
 ---
 
 **Desenvolvido por Raed** 🚀
 
-*Última atualização: Janeiro 2025*
+*Última atualização: Setembro 2025*

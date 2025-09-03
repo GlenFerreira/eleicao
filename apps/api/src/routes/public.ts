@@ -153,10 +153,10 @@ router.get('/:companySlug', async (req, res, next) => {
 router.post('/:companySlug/responses', async (req, res, next) => {
   try {
     const { companySlug } = req.params
-    const { contactInfo, answers } = req.body
+    const { contactInfo, answers, city } = req.body
 
     console.log('Recebendo respostas para empresa:', companySlug)
-    console.log('Dados recebidos:', { contactInfo, answers })
+    console.log('Dados recebidos:', { contactInfo, answers, city })
 
     if (!companySlug || !answers || !Array.isArray(answers)) {
       throw createError('Dados inválidos', 400)
@@ -200,15 +200,17 @@ router.post('/:companySlug/responses', async (req, res, next) => {
     console.log('Tentando inserir resposta do questionário:', {
       survey_id: survey.id,
       company_id: company.id,
-      session_token: sessionToken
+      session_token: sessionToken,
+      city: city
     })
 
-    // Preparar dados para inserção na estrutura atual da tabela
+    // Preparar dados para inserção na estrutura normalizada
     const responseData: any = {
       survey_id: survey.id,
       company_id: company.id,
       session_token: sessionToken,
-      completed_at: new Date().toISOString()
+      completed_at: new Date().toISOString(),
+      city: city || 'Não informado'
     }
 
     // Adicionar informações de contato se fornecidas
@@ -219,18 +221,7 @@ router.post('/:companySlug/responses', async (req, res, next) => {
       if (contactInfo.newsletter !== undefined) responseData.wants_newsletter = contactInfo.newsletter
     }
 
-    // Mapear respostas para os campos específicos da tabela
-    answers.forEach((answer: any, index: number) => {
-      const questionNumber = index + 3 // Começando do question3_answer
-      const fieldName = `question${questionNumber}_answer`
-      
-      if (typeof answer.answer === 'string') {
-        responseData[fieldName] = answer.answer
-      } else if (Array.isArray(answer.answer)) {
-        responseData[fieldName] = answer.answer.join(', ')
-      }
-    })
-
+    // Inserir resposta do questionário
     const { data: surveyResponse, error: responseError } = await supabase
       .from('survey_responses')
       .insert(responseData)
@@ -239,16 +230,38 @@ router.post('/:companySlug/responses', async (req, res, next) => {
 
     if (responseError) {
       console.error('Erro ao criar resposta do questionário:', responseError)
-      console.error('Detalhes do erro:', {
-        code: responseError.code,
-        message: responseError.message,
-        details: responseError.details,
-        hint: responseError.hint
-      })
       throw createError(`Erro ao salvar resposta do questionário: ${responseError.message}`, 500)
     }
 
     console.log('Resposta do questionário criada:', surveyResponse)
+
+    // Inserir respostas individuais na tabela question_answers
+    const answersToInsert = answers.map((answer: any) => ({
+      survey_response_id: surveyResponse.id,
+      question_id: answer.questionId,
+      answer_text: typeof answer.answer === 'string' ? answer.answer : null,
+      selected_options: Array.isArray(answer.answer) ? answer.answer : null,
+      rating_value: typeof answer.answer === 'string' && !isNaN(Number(answer.answer)) ? Number(answer.answer) : null
+    }))
+
+    console.log('Preparando para inserir respostas individuais:', answersToInsert)
+
+    if (answersToInsert.length > 0) {
+      const { data: insertedAnswers, error: answersError } = await supabase
+        .from('question_answers')
+        .insert(answersToInsert)
+        .select()
+
+      if (answersError) {
+        console.error('Erro ao inserir respostas individuais:', answersError)
+        // Não falhar se não conseguir inserir as respostas individuais
+        // A resposta principal já foi salva
+      } else {
+        console.log('Respostas individuais inseridas com sucesso:', insertedAnswers)
+      }
+    } else {
+      console.log('Nenhuma resposta individual para inserir')
+    }
     
     res.status(201).json({
       success: true,
