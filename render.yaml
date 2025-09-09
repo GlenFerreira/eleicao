@@ -41,7 +41,7 @@ services:
     staticPublishPath: apps/admin/dist
     envVars:
       - key: VITE_API_URL
-        value: https://eleicao-api.onrender.com/api
+        value: https://preview-5pug.onrender.com/api
       - key: NODE_VERSION
         value: 18
 
@@ -63,6 +63,6 @@ services:
     staticPublishPath: apps/web/dist
     envVars:
       - key: VITE_API_URL
-        value: https://eleicao-api.onrender.com/api
+        value: https://preview-5pug.onrender.com/api
       - key: NODE_VERSION
         value: 18
