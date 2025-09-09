@@ -42,7 +42,7 @@ router.post('/login', async (req, res, next) => {
     }
 
     // Verificar se o usuário está ativo
-    if (!user.is_active) {
+    if (!user || !user.is_active) {
       throw createError('Conta desativada', 403)
     }
 
@@ -59,7 +59,7 @@ router.post('/login', async (req, res, next) => {
         email: user.email,
         role: user.role,
         userType,
-        companyId: user.company_id
+        companyId: (user as any).company_id
       },
       process.env.JWT_SECRET!,
       { expiresIn: '24h' }
@@ -76,7 +76,7 @@ router.post('/login', async (req, res, next) => {
           name: user.name,
           role: user.role,
           userType,
-          companyId: user.company_id
+          companyId: (user as any).company_id
         },
         token
       }
