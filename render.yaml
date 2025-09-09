@@ -1,0 +1,41 @@
+services:
+  # Backend API
+  - type: web
+    name: eleicao-api
+    env: node
+    plan: free
+    buildCommand: cd apps/api && npm install && npm run build
+    startCommand: cd apps/api && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: SUPABASE_URL
+        value: "SUA_URL_DO_SUPABASE_AQUI"
+      - key: SUPABASE_ANON_KEY
+        value: "SUA_CHAVE_ANONIMA_AQUI"
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        value: "SUA_CHAVE_SERVICE_ROLE_AQUI"
+
+  # Frontend Admin
+  - type: web
+    name: eleicao-admin
+    env: static
+    plan: free
+    buildCommand: cd apps/admin && npm install && npm run build
+    staticPublishPath: apps/admin/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://eleicao-api.onrender.com
+
+  # Frontend Web
+  - type: web
+    name: eleicao-web
+    env: static
+    plan: free
+    buildCommand: cd apps/web && npm install && npm run build
+    staticPublishPath: apps/web/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://eleicao-api.onrender.com
