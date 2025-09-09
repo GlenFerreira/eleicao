@@ -6,15 +6,15 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: process.env.WEB_PORT ? parseInt(process.env.WEB_PORT) : 3003,
+    port: 3003,
     host: true
   },
   define: {
-    'import.meta.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || 'http://localhost:3001/api')
+    'import.meta.env.VITE_API_URL': JSON.stringify('http://localhost:3001/api')
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
+      '@': path.resolve('./src')
     }
   }
 })
