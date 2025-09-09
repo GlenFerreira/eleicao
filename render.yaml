@@ -31,6 +31,8 @@ services:
     buildCommand: |
       cd apps/admin
       npm install -g yarn
+      # Remover package.json raiz que causa conflito
+      rm -f ../../package.json
       # Criar package.json ultra simples
       cat > package.json << 'EOF'
       {
@@ -55,7 +57,7 @@ services:
       }
       EOF
       rm -rf node_modules yarn.lock dist
-      yarn install --ignore-workspace-root-check
+      yarn install
       yarn build
     staticPublishPath: apps/admin/dist
     envVars:
@@ -72,6 +74,8 @@ services:
     buildCommand: |
       cd apps/web
       npm install -g yarn
+      # Remover package.json raiz que causa conflito
+      rm -f ../../package.json
       # Criar package.json ultra simples
       cat > package.json << 'EOF'
       {
@@ -96,7 +100,7 @@ services:
       }
       EOF
       rm -rf node_modules yarn.lock dist
-      yarn install --ignore-workspace-root-check
+      yarn install
       yarn build
     staticPublishPath: apps/web/dist
     envVars:
