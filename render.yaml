@@ -55,7 +55,7 @@ services:
       }
       EOF
       rm -rf node_modules yarn.lock dist
-      yarn install
+      yarn install --ignore-workspace-root-check
       yarn build
     staticPublishPath: apps/admin/dist
     envVars:
@@ -96,7 +96,7 @@ services:
       }
       EOF
       rm -rf node_modules yarn.lock dist
-      yarn install
+      yarn install --ignore-workspace-root-check
       yarn build
     staticPublishPath: apps/web/dist
     envVars:
