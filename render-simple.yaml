@@ -6,7 +6,8 @@ services:
     plan: free
     buildCommand: |
       cd apps/api
-      npm install --legacy-peer-deps --no-audit --no-fund
+      rm -rf node_modules package-lock.json
+      npm install --legacy-peer-deps --no-audit --no-fund --no-optional
       npm run build
     startCommand: cd apps/api && npm start
     envVars:
@@ -28,7 +29,8 @@ services:
     plan: free
     buildCommand: |
       cd apps/admin
-      npm install --legacy-peer-deps --no-audit --no-fund
+      rm -rf node_modules package-lock.json dist
+      npm install --legacy-peer-deps --no-audit --no-fund --no-optional
       npm run build
     staticPublishPath: apps/admin/dist
     envVars:
@@ -44,7 +46,8 @@ services:
     plan: free
     buildCommand: |
       cd apps/web
-      npm install --legacy-peer-deps --no-audit --no-fund
+      rm -rf node_modules package-lock.json dist
+      npm install --legacy-peer-deps --no-audit --no-fund --no-optional
       npm run build
     staticPublishPath: apps/web/dist
     envVars:

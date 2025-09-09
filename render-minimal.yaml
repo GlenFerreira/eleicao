@@ -21,14 +21,16 @@ services:
       - key: SUPABASE_SERVICE_ROLE_KEY
         value: "SUA_CHAVE_SERVICE_ROLE_AQUI"
 
-  # Frontend Admin
+  # Frontend Admin - Versão Minimalista
   - type: web
     name: eleicao-admin
     env: static
     plan: free
     buildCommand: |
       cd apps/admin
-      npm install --legacy-peer-deps --no-audit --no-fund
+      cp package-minimal.json package.json
+      rm -rf node_modules package-lock.json dist
+      npm install --legacy-peer-deps --no-audit --no-fund --no-optional
       npm run build
     staticPublishPath: apps/admin/dist
     envVars:
@@ -37,14 +39,16 @@ services:
       - key: NODE_VERSION
         value: 18
 
-  # Frontend Web
+  # Frontend Web - Versão Minimalista
   - type: web
     name: eleicao-web
     env: static
     plan: free
     buildCommand: |
       cd apps/web
-      npm install --legacy-peer-deps --no-audit --no-fund
+      cp package-minimal.json package.json
+      rm -rf node_modules package-lock.json dist
+      npm install --legacy-peer-deps --no-audit --no-fund --no-optional
       npm run build
     staticPublishPath: apps/web/dist
     envVars:
