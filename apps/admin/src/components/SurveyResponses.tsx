@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, BarChart3, Users, Calendar, FileText, AlertCircle, Loader2 } from 'lucide-react'
+import { ArrowLeft, BarChart3, Users, Calendar, FileText, AlertCircle } from 'lucide-react'
 import { surveyService } from '../services/api'
 
 interface QuestionAnswer {

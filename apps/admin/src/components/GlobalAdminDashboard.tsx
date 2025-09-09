@@ -1,5 +1,5 @@
 import React from 'react'
-import { Building, Users, BarChart3, Settings, LogOut } from 'lucide-react'
+import { Building, Users, BarChart3, LogOut } from 'lucide-react'
 
 const GlobalAdminDashboard: React.FC = () => {
   const handleLogout = () => {

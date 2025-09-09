@@ -1,8 +1,8 @@
 import { Router } from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import { supabase } from '../config/supabase'
-import { createError } from '../middleware/errorHandler'
+import { supabase } from '../config/supabase.js'
+import { createError } from '../middleware/errorHandler.js'
 
 const router = Router()
 

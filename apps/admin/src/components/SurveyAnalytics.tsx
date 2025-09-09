@@ -308,7 +308,7 @@ const SurveyAnalytics: React.FC = () => {
                             #{index + 1}
                           </span>
                           <span className="text-sm font-medium text-gray-700">
-                            {option.optionText || `Opção ${index + 1}`}
+                            {(option as any).optionText || `Opção ${index + 1}`}
                           </span>
                           {index === 0 && (
                             <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
