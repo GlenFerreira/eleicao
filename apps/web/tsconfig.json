@@ -23,10 +23,7 @@
     /* Path mapping */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@ui/*": ["../../packages/ui/src/*"],
-      "@utils/*": ["../../packages/utils/src/*"],
-      "@config/*": ["../../packages/config/src/*"]
+      "@/*": ["./src/*"]
     }
   },
   "include": ["src"],
