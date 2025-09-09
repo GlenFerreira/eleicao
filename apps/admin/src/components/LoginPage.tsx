@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react'
+import { authService } from '../services/api'
 
 interface LoginForm {
   email: string
@@ -51,19 +52,7 @@ const LoginPage: React.FC = () => {
     setError('')
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData)
-      })
-
-      const data: LoginResponse = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Erro no login')
-      }
+      const data: LoginResponse = await authService.login(formData)
 
       if (data.success) {
         // Salvar token no localStorage

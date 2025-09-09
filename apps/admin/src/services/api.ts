@@ -85,6 +85,13 @@ export const surveyService = {
 
 // Serviços de Autenticação
 export const authService = {
+  // Login
+  async login(credentials: { email: string; password: string }) {
+    return apiRequest('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(credentials)
+    })
+  },
   // Obter perfil do usuário
   async getProfile() {
     return apiRequest('/admin/profile')
