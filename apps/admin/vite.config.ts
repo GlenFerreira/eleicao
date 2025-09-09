@@ -10,7 +10,7 @@ export default defineConfig({
     host: true
   },
   define: {
-    'import.meta.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || 'http://localhost:3001/api')
+    'import.meta.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || 'https://preview-5pug.onrender.com/api')
   },
   resolve: {
     alias: {
