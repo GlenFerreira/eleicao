@@ -24,7 +24,7 @@ const PORT = process.env.PORT || 3001
 // Middleware de segurança
 app.use(helmet())
 app.use(cors({
-  origin: ['http://localhost:3002', 'http://localhost:3003'], // Apps admin e web
+  origin: ['http://localhost:3002', 'http://localhost:3003', 'https://eleicao.onrender.com', 'https://eleicao-web.onrender.com'], // Apps admin e web
   credentials: true
 }))
 
