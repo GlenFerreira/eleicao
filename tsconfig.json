@@ -17,21 +17,13 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "ui": ["packages/ui/src"],
-      "utils": ["packages/utils/src"],
-      "config": ["packages/config/src"],
-      "database": ["packages/database/src"]
+      "@/*": ["./src/*"]
     }
   },
   "include": ["src"],
   "references": [
     { "path": "./apps/web" },
     { "path": "./apps/admin" },
-    { "path": "./apps/api" },
-    { "path": "./packages/database" },
-    { "path": "./packages/ui" },
-    { "path": "./packages/utils" },
-    { "path": "./packages/config" }
+    { "path": "./apps/api" }
   ]
 }
