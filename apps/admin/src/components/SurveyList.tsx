@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Plus, Edit, Eye, BarChart3, Trash2, Copy, ExternalLink, FileText, Users } from 'lucide-react'
 import { surveyService } from '../services/api'
 
+// Base URL do site público (questionário)
+const WEB_BASE_URL = (import.meta as any).env?.VITE_WEB_URL || 'http://localhost:3003'
+
 interface Survey {
   id: string
   title: string
@@ -124,13 +127,13 @@ const SurveyList: React.FC = () => {
   }
 
   const handleCopyLink = (companySlug: string) => {
-    const link = `http://localhost:3003/${companySlug}`
+    const link = `${WEB_BASE_URL}/${companySlug}`
     navigator.clipboard.writeText(link)
     alert('Link copiado para a área de transferência!')
   }
 
   const handleOpenSurvey = (companySlug: string) => {
-    window.open(`http://localhost:3003/${companySlug}`, '_blank')
+    window.open(`${WEB_BASE_URL}/${companySlug}`, '_blank')
   }
 
   const formatDate = (dateString: string) => {
