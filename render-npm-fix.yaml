@@ -6,7 +6,9 @@ services:
     plan: free
     buildCommand: |
       cd apps/api
-      npm install --legacy-peer-deps
+      npm cache clean --force
+      rm -rf node_modules package-lock.json
+      npm install --no-package-lock --no-audit --no-fund --legacy-peer-deps --force
       npm run build
     startCommand: cd apps/api && npm start
     envVars:
@@ -21,14 +23,17 @@ services:
       - key: SUPABASE_SERVICE_ROLE_KEY
         value: "SUA_CHAVE_SERVICE_ROLE_AQUI"
 
-  # Frontend Admin
+  # Frontend Admin - Versão Básica
   - type: web
     name: eleicao-admin
     env: static
     plan: free
     buildCommand: |
       cd apps/admin
-      npm install --legacy-peer-deps
+      cp package-basic.json package.json
+      npm cache clean --force
+      rm -rf node_modules package-lock.json dist
+      npm install --no-package-lock --no-audit --no-fund --legacy-peer-deps --force
       npm run build
     staticPublishPath: apps/admin/dist
     envVars:
@@ -37,14 +42,17 @@ services:
       - key: NODE_VERSION
         value: 18
 
-  # Frontend Web
+  # Frontend Web - Versão Básica
   - type: web
     name: eleicao-web
     env: static
     plan: free
     buildCommand: |
       cd apps/web
-      npm install --legacy-peer-deps
+      cp package-basic.json package.json
+      npm cache clean --force
+      rm -rf node_modules package-lock.json dist
+      npm install --no-package-lock --no-audit --no-fund --legacy-peer-deps --force
       npm run build
     staticPublishPath: apps/web/dist
     envVars:
@@ -52,4 +60,3 @@ services:
         value: https://eleicao-api.onrender.com
       - key: NODE_VERSION
         value: 18
-

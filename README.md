@@ -25,11 +25,6 @@ Eleicao/
 │   ├── admin/              # Painel administrativo (React + Vite)
 │   ├── api/                # Backend API (Node.js + Express)
 │   └── web/                # Aplicação pública (React + Vite)
-├── packages/                # Pacotes compartilhados
-│   ├── config/             # Configurações compartilhadas
-│   ├── database/           # Schemas e migrações
-│   ├── ui/                 # Componentes UI compartilhados
-│   └── utils/              # Utilitários compartilhados
 ├── database/                # Scripts SQL organizados
 │   ├── clean_and_migrate.sql
 │   ├── migrate_existing_data.sql

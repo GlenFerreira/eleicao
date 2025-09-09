@@ -4,8 +4,7 @@
   "description": "SaaS Raed - Sistema de Questionários",
   "private": true,
   "workspaces": [
-    "apps/*",
-    "packages/*"
+    "apps/*"
   ],
   "scripts": {
     "build": "turbo run build",
