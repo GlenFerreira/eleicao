@@ -33,29 +33,8 @@ services:
       npm install -g yarn
       # Remover package.json raiz que causa conflito
       rm -f ../../package.json
-      # Criar package.json ultra simples
-      cat > package.json << 'EOF'
-      {
-        "name": "admin",
-        "private": true,
-        "version": "0.0.0",
-        "type": "module",
-        "scripts": {
-          "build": "vite build"
-        },
-        "dependencies": {
-          "react": "18.2.0",
-          "react-dom": "18.2.0"
-        },
-        "devDependencies": {
-          "@types/react": "18.2.37",
-          "@types/react-dom": "18.2.15",
-          "@vitejs/plugin-react": "4.1.1",
-          "typescript": "5.2.2",
-          "vite": "5.0.0"
-        }
-      }
-      EOF
+      # Usar package-yarn.json
+      cp package-yarn.json package.json
       rm -rf node_modules yarn.lock dist
       yarn install
       yarn build
@@ -76,29 +55,8 @@ services:
       npm install -g yarn
       # Remover package.json raiz que causa conflito
       rm -f ../../package.json
-      # Criar package.json ultra simples
-      cat > package.json << 'EOF'
-      {
-        "name": "web",
-        "private": true,
-        "version": "0.0.0",
-        "type": "module",
-        "scripts": {
-          "build": "vite build"
-        },
-        "dependencies": {
-          "react": "18.2.0",
-          "react-dom": "18.2.0"
-        },
-        "devDependencies": {
-          "@types/react": "18.2.37",
-          "@types/react-dom": "18.2.15",
-          "@vitejs/plugin-react": "4.1.1",
-          "typescript": "5.2.2",
-          "vite": "5.0.0"
-        }
-      }
-      EOF
+      # Usar package-yarn.json
+      cp package-yarn.json package.json
       rm -rf node_modules yarn.lock dist
       yarn install
       yarn build
