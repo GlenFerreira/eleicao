@@ -23,19 +23,23 @@ services:
     name: eleicao-admin
     env: static
     plan: free
-    buildCommand: cd apps/admin && chmod +x build.sh && ./build.sh
+    buildCommand: cd apps/admin && npm install -g npm@8.19.4 && npm cache clean --force && rm -rf node_modules package-lock.json && npm install --no-audit --no-fund --legacy-peer-deps --no-optional && npm run build
     staticPublishPath: apps/admin/dist
     envVars:
       - key: VITE_API_URL
         value: https://eleicao-api.onrender.com
+      - key: NODE_VERSION
+        value: 18
 
   # Frontend Web
   - type: web
     name: eleicao-web
     env: static
     plan: free
-    buildCommand: cd apps/web && chmod +x build.sh && ./build.sh
+    buildCommand: cd apps/web && npm install -g npm@8.19.4 && npm cache clean --force && rm -rf node_modules package-lock.json && npm install --no-audit --no-fund --legacy-peer-deps --no-optional && npm run build
     staticPublishPath: apps/web/dist
     envVars:
       - key: VITE_API_URL
         value: https://eleicao-api.onrender.com
+      - key: NODE_VERSION
+        value: 18
