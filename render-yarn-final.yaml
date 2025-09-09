@@ -6,11 +6,10 @@ services:
     plan: free
     buildCommand: |
       cd apps/api
-      npm cache clean --force
-      rm -rf node_modules package-lock.json
-      npm install --no-package-lock --no-audit --no-fund --legacy-peer-deps --force
-      npm run build
-    startCommand: cd apps/api && npm start
+      npm install -g yarn
+      yarn install --frozen-lockfile
+      yarn build
+    startCommand: cd apps/api && yarn start
     envVars:
       - key: NODE_ENV
         value: production
@@ -54,7 +53,6 @@ services:
         }
       }
       EOF
-      rm -rf node_modules yarn.lock dist
       yarn install
       yarn build
     staticPublishPath: apps/admin/dist
@@ -95,7 +93,6 @@ services:
         }
       }
       EOF
-      rm -rf node_modules yarn.lock dist
       yarn install
       yarn build
     staticPublishPath: apps/web/dist
