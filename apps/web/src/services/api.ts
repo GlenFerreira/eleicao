@@ -1,4 +1,4 @@
-const API_BASE_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/public`
+const API_BASE_URL = `${(import.meta as any).env?.VITE_API_URL || 'http://localhost:3001/api'}/public`
 
 // Função auxiliar para fazer requisições HTTP
 async function apiRequest(endpoint: string, options: RequestInit = {}) {
