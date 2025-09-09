@@ -45,7 +45,7 @@ VITE_API_URL=https://eleicao-api.onrender.com
 1. **Nome**: `eleicao-api`
 2. **Branch**: `main`
 3. **Root Directory**: `apps/api`
-4. **Build Command**: `npm install`
+4. **Build Command**: `npm install && npm run build`
 5. **Start Command**: `npm start`
 6. **Node Version**: `18`
 
