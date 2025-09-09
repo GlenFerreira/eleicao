@@ -23,7 +23,7 @@ services:
     name: eleicao-admin
     env: static
     plan: free
-    buildCommand: cd apps/admin && npm ci && npm run build
+    buildCommand: cd apps/admin && chmod +x build.sh && ./build.sh
     staticPublishPath: apps/admin/dist
     envVars:
       - key: VITE_API_URL
@@ -34,7 +34,7 @@ services:
     name: eleicao-web
     env: static
     plan: free
-    buildCommand: cd apps/web && npm ci && npm run build
+    buildCommand: cd apps/web && chmod +x build.sh && ./build.sh
     staticPublishPath: apps/web/dist
     envVars:
       - key: VITE_API_URL

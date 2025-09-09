@@ -9,7 +9,7 @@
 - **Nome**: `eleicao-admin`
 - **Branch**: `main`
 - **Root Directory**: `apps/admin`
-- **Build Command**: `npm ci && npm run build`
+- **Build Command**: `rm -rf node_modules package-lock.json && npm install --no-audit --no-fund && npm run build`
 - **Publish Directory**: `dist`
 - **Node Version**: `18`
 
@@ -25,13 +25,13 @@ VITE_API_URL=https://eleicao-api.onrender.com
 - **Nome**: `eleicao-web`
 - **Branch**: `main`
 - **Root Directory**: `apps/web`
-- **Build Command**: `npm ci && npm run build`
+- **Build Command**: `rm -rf node_modules package-lock.json && npm install --no-audit --no-fund && npm run build`
 - **Publish Directory**: `dist`
 - **Node Version**: `18`
 
 #### **Variáveis de Ambiente:**
 ```
-VITE_API_URL=https://eleicao-api.onrender.com
+VITE_API_URL=https://preview-5pug.onrender.com
 ```
 
 ## 🔧 Configurações Implementadas
@@ -58,7 +58,7 @@ VITE_API_URL=https://eleicao-api.onrender.com
 4. Configure:
    - **Name**: `eleicao-admin`
    - **Root Directory**: `apps/admin`
-   - **Build Command**: `npm ci && npm run build`
+   - **Build Command**: `rm -rf node_modules package-lock.json && npm install --no-audit --no-fund && npm run build`
    - **Publish Directory**: `dist`
 5. Adicione variável de ambiente:
    - **Key**: `VITE_API_URL`
@@ -70,7 +70,7 @@ VITE_API_URL=https://eleicao-api.onrender.com
 3. Configure:
    - **Name**: `eleicao-web`
    - **Root Directory**: `apps/web`
-   - **Build Command**: `npm ci && npm run build`
+   - **Build Command**: `rm -rf node_modules package-lock.json && npm install --no-audit --no-fund && npm run build`
    - **Publish Directory**: `dist`
 4. Adicione variável de ambiente:
    - **Key**: `VITE_API_URL`
