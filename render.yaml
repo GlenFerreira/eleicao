@@ -35,8 +35,9 @@ services:
       rm -f ../../package.json
       # Usar package-yarn.json
       cp package-yarn.json package.json
-      # Criar arquivo .env.production com a URL correta
+      # Criar arquivo .env.production com as URLs corretas
       echo "VITE_API_URL=https://preview-5pug.onrender.com/api" > .env.production
+      echo "VITE_WEB_URL=https://surv-rkzx.onrender.com" >> .env.production
       rm -rf node_modules yarn.lock dist
       yarn install
       yarn build
@@ -44,6 +45,8 @@ services:
     envVars:
       - key: VITE_API_URL
         value: https://preview-5pug.onrender.com/api
+      - key: VITE_WEB_URL
+        value: https://surv-rkzx.onrender.com
       - key: NODE_VERSION
         value: 18
 

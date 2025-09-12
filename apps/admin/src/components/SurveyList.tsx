@@ -3,8 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Plus, Edit, Eye, BarChart3, Trash2, Copy, ExternalLink, FileText, Users } from 'lucide-react'
 import { surveyService } from '../services/api'
 
-// Base URL do site público (questionário)
-const WEB_BASE_URL = (import.meta as any).env?.VITE_WEB_URL || 'http://localhost:3003'
+// Base URL do site público (questionário) - normaliza espaços e barra final
+const WEB_BASE_URL = (() => {
+  const raw = ((import.meta as any).env?.VITE_WEB_URL || 'http://localhost:3003') as string
+  const trimmed = raw.trim()
+  return trimmed.endsWith('/') ? trimmed.slice(0, -1) : trimmed
+})()
 
 interface Survey {
   id: string
@@ -127,13 +131,17 @@ const SurveyList: React.FC = () => {
   }
 
   const handleCopyLink = (companySlug: string) => {
-    const link = `${WEB_BASE_URL}/${companySlug}`
+    const slug = (companySlug || '').toString().trim()
+    const safeSlug = encodeURIComponent(slug)
+    const link = `${WEB_BASE_URL}/${safeSlug}`
     navigator.clipboard.writeText(link)
     alert('Link copiado para a área de transferência!')
   }
 
   const handleOpenSurvey = (companySlug: string) => {
-    window.open(`${WEB_BASE_URL}/${companySlug}`, '_blank')
+    const slug = (companySlug || '').toString().trim()
+    const safeSlug = encodeURIComponent(slug)
+    window.open(`${WEB_BASE_URL}/${safeSlug}`, '_blank')
   }
 
   const formatDate = (dateString: string) => {
