@@ -7,7 +7,13 @@ import { surveyService } from '../services/api'
 const WEB_BASE_URL = (() => {
   const raw = ((import.meta as any).env?.VITE_WEB_URL || 'http://localhost:3003') as string
   const trimmed = raw.trim()
-  return trimmed.endsWith('/') ? trimmed.slice(0, -1) : trimmed
+  const result = trimmed.endsWith('/') ? trimmed.slice(0, -1) : trimmed
+  
+  // Debug log para verificar a URL sendo usada
+  console.log('🔗 WEB_BASE_URL configurada:', result)
+  console.log('🔗 VITE_WEB_URL original:', raw)
+  
+  return result
 })()
 
 interface Survey {
@@ -141,7 +147,16 @@ const SurveyList: React.FC = () => {
   const handleOpenSurvey = (companySlug: string) => {
     const slug = (companySlug || '').toString().trim()
     const safeSlug = encodeURIComponent(slug)
-    window.open(`${WEB_BASE_URL}/${safeSlug}`, '_blank')
+    const finalUrl = `${WEB_BASE_URL}/${safeSlug}`
+    
+    // Debug log para verificar a URL final
+    console.log('🚀 Abrindo questionário:')
+    console.log('  - Company Slug:', companySlug)
+    console.log('  - Safe Slug:', safeSlug)
+    console.log('  - WEB_BASE_URL:', WEB_BASE_URL)
+    console.log('  - URL Final:', finalUrl)
+    
+    window.open(finalUrl, '_blank')
   }
 
   const formatDate = (dateString: string) => {
