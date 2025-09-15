@@ -11,7 +11,9 @@ async function apiRequest(endpoint: string, options: RequestInit = {}) {
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, config)
+    // Garantir que não há barras duplas na URL
+    const url = `${API_BASE_URL}${endpoint}`.replace(/\/+/g, '/').replace(':/', '://')
+    const response = await fetch(url, config)
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))
