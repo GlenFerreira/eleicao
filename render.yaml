@@ -51,7 +51,7 @@ services:
         value: 18
 
   # Frontend Web - Usando Yarn
-  - type: web
+  - type: static
     name: eleicao-web
     env: static
     plan: free
