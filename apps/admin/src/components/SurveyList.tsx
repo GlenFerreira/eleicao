@@ -137,22 +137,19 @@ const SurveyList: React.FC = () => {
   }
 
   const handleCopyLink = (companySlug: string) => {
-    const slug = (companySlug || '').toString().trim()
-    const safeSlug = encodeURIComponent(slug)
-    const link = `${WEB_BASE_URL}/${safeSlug}`
+    // Copiar sempre a URL da página inicial do site web
+    const link = WEB_BASE_URL
     navigator.clipboard.writeText(link)
     alert('Link copiado para a área de transferência!')
   }
 
   const handleOpenSurvey = (companySlug: string) => {
-    const slug = (companySlug || '').toString().trim()
-    const safeSlug = encodeURIComponent(slug)
-    const finalUrl = `${WEB_BASE_URL}/${safeSlug}`
+    // Abrir sempre a página inicial do site web
+    const finalUrl = WEB_BASE_URL
     
     // Debug log para verificar a URL final
     console.log('🚀 Abrindo questionário:')
     console.log('  - Company Slug:', companySlug)
-    console.log('  - Safe Slug:', safeSlug)
     console.log('  - WEB_BASE_URL:', WEB_BASE_URL)
     console.log('  - URL Final:', finalUrl)
     
