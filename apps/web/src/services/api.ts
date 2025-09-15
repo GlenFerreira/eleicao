@@ -1,4 +1,13 @@
-const API_BASE_URL = `${(import.meta as any).env?.VITE_API_URL || 'https://preview-5pug.onrender.com/api'}/public`
+const API_BASE_URL = (() => {
+  const rawUrl = (import.meta as any).env?.VITE_API_URL || 'https://preview-5pug.onrender.com/api'
+  const result = `${rawUrl}/public`
+  
+  // Debug log para verificar a URL da API
+  console.log('🌐 API_BASE_URL configurada:', result)
+  console.log('🌐 VITE_API_URL original:', rawUrl)
+  
+  return result
+})()
 
 // Função auxiliar para fazer requisições HTTP
 async function apiRequest(endpoint: string, options: RequestInit = {}) {
@@ -13,6 +22,13 @@ async function apiRequest(endpoint: string, options: RequestInit = {}) {
   try {
     // Garantir que não há barras duplas na URL
     const url = `${API_BASE_URL}${endpoint}`.replace(/\/+/g, '/').replace(':/', '://')
+    
+    // Debug log para verificar a URL final
+    console.log('🚀 Fazendo requisição:')
+    console.log('  - Endpoint:', endpoint)
+    console.log('  - API_BASE_URL:', API_BASE_URL)
+    console.log('  - URL Final:', url)
+    
     const response = await fetch(url, config)
     
     if (!response.ok) {

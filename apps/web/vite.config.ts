@@ -10,7 +10,8 @@ export default defineConfig({
     host: true
   },
   define: {
-    'import.meta.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || 'https://preview-5pug.onrender.com/api')
+    'import.meta.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || 'https://preview-5pug.onrender.com/api'),
+    'import.meta.env.VITE_WEB_URL': JSON.stringify(process.env.VITE_WEB_URL || 'https://surv-rkzx.onrender.com')
   },
   resolve: {
     alias: {
