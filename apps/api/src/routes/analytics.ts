@@ -158,7 +158,7 @@ router.get('/:surveyId', async (req: any, res, next) => {
         }
         cityGroups[responseCity].push(response)
 
-        // Extrair notas das perguntas (assumindo ordem: federal, state, city, interest, open)
+        // Extrair notas das perguntas usando análise inteligente do texto
         let federalRating: number | null = null
         let stateRating: number | null = null
         let cityRating: number | null = null
@@ -166,8 +166,7 @@ router.get('/:surveyId', async (req: any, res, next) => {
 
         if (response.question_answers && Array.isArray(response.question_answers)) {
           response.question_answers.forEach((qa: any) => {
-            if (qa.questions && qa.questions.order_index) {
-
+            if (qa.questions && qa.questions.question_text) {
               
               // Processar perguntas de múltipla escolha
               if (qa.questions.question_type === 'multiple_choice') {
@@ -189,19 +188,34 @@ router.get('/:surveyId', async (req: any, res, next) => {
                 }
               }
 
-              switch (qa.questions.order_index) {
-                case 1: // Federal
-                  federalRating = qa.rating_value || (qa.answer_text ? parseInt(qa.answer_text) : null)
-                  break
-                case 2: // State
-                  stateRating = qa.rating_value || (qa.answer_text ? parseInt(qa.answer_text) : null)
-                  break
-                case 3: // City
-                  cityRating = qa.rating_value || (qa.answer_text ? parseInt(qa.answer_text) : null)
-                  break
-                case 4: // Interest
-                  interestAnswer = qa.answer_text || null
-                  break
+              // Análise inteligente do texto da pergunta para identificar o tipo
+              const questionText = qa.questions.question_text.toLowerCase()
+              const ratingValue = qa.rating_value || (qa.answer_text ? parseInt(qa.answer_text) : null)
+              
+              console.log('Analisando pergunta:', questionText, 'Valor:', ratingValue)
+              
+              // Identificar se é pergunta de rating (0-10)
+              if (qa.questions.question_type === 'rating' && ratingValue !== null) {
+                // Verificar se é sobre governo federal
+                if (questionText.includes('federal') || questionText.includes('nacional') || questionText.includes('brasília')) {
+                  federalRating = ratingValue
+                  console.log('Identificado como FEDERAL:', ratingValue)
+                }
+                // Verificar se é sobre governo estadual
+                else if (questionText.includes('estadual') || questionText.includes('estado') || questionText.includes('governador')) {
+                  stateRating = ratingValue
+                  console.log('Identificado como ESTADUAL:', ratingValue)
+                }
+                // Verificar se é sobre governo municipal
+                else if (questionText.includes('municipal') || questionText.includes('prefeitura') || questionText.includes('prefeito') || questionText.includes('cidade')) {
+                  cityRating = ratingValue
+                  console.log('Identificado como MUNICIPAL:', ratingValue)
+                }
+              }
+              // Identificar pergunta de interesse (múltipla escolha)
+              else if (qa.questions.question_type === 'multiple_choice' && qa.answer_text) {
+                interestAnswer = qa.answer_text
+                console.log('Identificado como INTERESSE:', qa.answer_text)
               }
             }
           })
