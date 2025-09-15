@@ -205,6 +205,97 @@ const SurveyAnalytics: React.FC = () => {
           </div>
         </div>
 
+        {/* Political Leaning Highlight Banner */}
+        {analytics.summary.totalResponses > 0 && (
+          <div className="mb-6">
+            {(() => {
+              const { politicalLeaning } = analytics.summary
+              const total = politicalLeaning.left + politicalLeaning.right + politicalLeaning.center + politicalLeaning.unknown
+              const percentages = {
+                left: (politicalLeaning.left / total) * 100,
+                right: (politicalLeaning.right / total) * 100,
+                center: (politicalLeaning.center / total) * 100,
+                unknown: (politicalLeaning.unknown / total) * 100
+              }
+              
+              // Encontrar a tendência predominante
+              const dominantLeaning = Object.entries(percentages)
+                .filter(([key]) => key !== 'unknown')
+                .sort(([,a], [,b]) => b - a)[0]
+              
+              const [leaning, percentage] = dominantLeaning || ['unknown', 0]
+              const isSignificant = percentage >= 40 // Pelo menos 40% para ser considerado significativo
+              
+              if (!isSignificant) return null
+              
+              return (
+                <div className={`relative overflow-hidden rounded-xl shadow-lg ${
+                  leaning === 'left' ? 'bg-gradient-to-r from-red-500 to-red-600' :
+                  leaning === 'right' ? 'bg-gradient-to-r from-blue-500 to-blue-600' :
+                  leaning === 'center' ? 'bg-gradient-to-r from-green-500 to-green-600' :
+                  'bg-gradient-to-r from-gray-500 to-gray-600'
+                }`}>
+                  <div className="absolute inset-0 bg-black bg-opacity-10"></div>
+                  <div className="relative px-8 py-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <div className="flex-shrink-0">
+                          <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                            <TrendingUp className="h-8 w-8 text-white" />
+                          </div>
+                        </div>
+                        <div>
+                          <h3 className="text-2xl font-bold text-white mb-1">
+                            Tendência Política da Amostra
+                          </h3>
+                          <p className="text-white text-opacity-90 text-lg">
+                            Esta amostra apresenta uma tendência predominantemente{' '}
+                            <span className="font-bold text-xl">
+                              {getPoliticalLeaningLabel(leaning).toUpperCase()}
+                            </span>
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-4xl font-bold text-white mb-1">
+                          {percentage.toFixed(1)}%
+                        </div>
+                        <div className="text-white text-opacity-80 text-sm">
+                          dos respondentes
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Barra de progresso visual */}
+                    <div className="mt-4">
+                      <div className="flex space-x-1">
+                        {Object.entries(percentages).map(([key, value]) => (
+                          <div
+                            key={key}
+                            className={`h-2 rounded-full ${
+                              key === leaning ? 'bg-white' : 'bg-white bg-opacity-30'
+                            }`}
+                            style={{ width: `${value}%` }}
+                            title={`${getPoliticalLeaningLabel(key)}: ${value.toFixed(1)}%`}
+                          />
+                        ))}
+                      </div>
+                      <div className="flex justify-between mt-2 text-xs text-white text-opacity-80">
+                        <span>Esquerda: {percentages.left.toFixed(1)}%</span>
+                        <span>Centro: {percentages.center.toFixed(1)}%</span>
+                        <span>Direita: {percentages.right.toFixed(1)}%</span>
+                        {percentages.unknown > 0 && (
+                          <span>Indefinido: {percentages.unknown.toFixed(1)}%</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )
+            })()}
+          </div>
+        )}
+
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
