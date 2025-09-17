@@ -157,7 +157,8 @@ const SurveyList: React.FC = () => {
 
   const handleGenerateQRCode = async (companySlug: string, surveyTitle: string) => {
     try {
-      const url = `${WEB_BASE_URL}/${companySlug}`
+      // Por enquanto, apontar para a raiz do site até resolver o roteamento SPA
+      const url = WEB_BASE_URL
       const qrCodeDataUrl = await QRCode.toDataURL(url, {
         width: 256,
         margin: 2,
