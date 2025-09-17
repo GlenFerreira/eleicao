@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 3003",
-    "build": "vite build",
+    "build": "vite build && cp public/_redirects dist/_redirects 2>/dev/null || echo '/*    /index.html   200' > dist/_redirects",
+    "build:render": "vite build && echo '/*    /index.html   200' > dist/_redirects",
     "preview": "vite preview"
   },
   "dependencies": {

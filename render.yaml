@@ -67,8 +67,13 @@ services:
       echo "VITE_WEB_URL=https://surv-rkzx.onrender.com" >> .env.production
       rm -rf node_modules yarn.lock dist
       yarn install
-      yarn build
+      yarn run build:render
+      ls -la dist/
     staticPublishPath: apps/web/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
     envVars:
       - key: VITE_API_URL
         value: https://preview-5pug.onrender.com/api
