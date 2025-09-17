@@ -19,11 +19,5 @@
     "type-check": {
       "dependsOn": ["^type-check"]
     }
-  },
-  "tasks": {
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "build/**"]
-    }
   }
 }

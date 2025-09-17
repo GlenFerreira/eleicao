@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Plus, Edit, Eye, BarChart3, Trash2, Copy, ExternalLink, FileText, Users } from 'lucide-react'
+import { ArrowLeft, Plus, Edit, Eye, BarChart3, Trash2, Copy, ExternalLink, FileText, Users, QrCode, X } from 'lucide-react'
 import { surveyService } from '../services/api'
+import QRCode from 'qrcode'
 
 // Base URL do site público (questionário) - normaliza espaços e barra final
 const WEB_BASE_URL = (() => {
@@ -33,6 +34,17 @@ const SurveyList: React.FC = () => {
   const [surveys, setSurveys] = useState<Survey[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [qrCodeModal, setQrCodeModal] = useState<{
+    isOpen: boolean
+    url: string
+    qrCodeDataUrl: string
+    surveyTitle: string
+  }>({
+    isOpen: false,
+    url: '',
+    qrCodeDataUrl: '',
+    surveyTitle: ''
+  })
 
   // Carregar questionários da API
   useEffect(() => {
@@ -141,6 +153,39 @@ const SurveyList: React.FC = () => {
     const link = WEB_BASE_URL
     navigator.clipboard.writeText(link)
     alert('Link copiado para a área de transferência!')
+  }
+
+  const handleGenerateQRCode = async (companySlug: string, surveyTitle: string) => {
+    try {
+      const url = `${WEB_BASE_URL}/${companySlug}`
+      const qrCodeDataUrl = await QRCode.toDataURL(url, {
+        width: 256,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      })
+      
+      setQrCodeModal({
+        isOpen: true,
+        url,
+        qrCodeDataUrl,
+        surveyTitle
+      })
+    } catch (error) {
+      console.error('Erro ao gerar QR Code:', error)
+      alert('Erro ao gerar QR Code')
+    }
+  }
+
+  const closeQRCodeModal = () => {
+    setQrCodeModal({
+      isOpen: false,
+      url: '',
+      qrCodeDataUrl: '',
+      surveyTitle: ''
+    })
   }
 
   const handleOpenSurvey = (companySlug: string) => {
@@ -304,72 +349,102 @@ const SurveyList: React.FC = () => {
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => handleOpenSurvey(survey.companyName || 'PSB')}
-                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md"
+                        className="flex items-center gap-1.5 px-3 py-2 bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800 rounded-md border border-blue-200 transition-colors duration-200"
                         title="Abrir questionário"
                       >
                         <ExternalLink className="h-4 w-4" />
+                        <span className="text-xs font-medium">Abrir</span>
                       </button>
                       
-                      <button
-                        onClick={() => handleCopyLink(survey.companyName || 'PSB')}
-                        className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-md"
-                        title="Copiar link"
-                      >
-                        <Copy className="h-4 w-4" />
-                      </button>
+                      <div className="relative group">
+                        <button
+                          className="flex items-center gap-1.5 px-3 py-2 bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-800 rounded-md border border-green-200 transition-colors duration-200"
+                          title="Opções de link"
+                        >
+                          <Copy className="h-4 w-4" />
+                          <span className="text-xs font-medium">Link</span>
+                        </button>
+                        
+                        <div className="absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+                          <div className="py-1">
+                            <button
+                              onClick={() => handleCopyLink(survey.companyName || 'PSB')}
+                              className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                              <Copy className="h-4 w-4" />
+                              Copiar Link
+                            </button>
+                            <button
+                              onClick={() => handleGenerateQRCode(survey.companyName || 'PSB', survey.title)}
+                              className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                              <QrCode className="h-4 w-4" />
+                              Gerar QR Code
+                            </button>
+                          </div>
+                        </div>
+                      </div>
                       
                       <button
                         onClick={() => handleViewAnalytics(survey.id)}
-                        className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-md"
+                        className="flex items-center gap-1.5 px-3 py-2 bg-purple-50 text-purple-700 hover:bg-purple-100 hover:text-purple-800 rounded-md border border-purple-200 transition-colors duration-200"
                         title="Ver analytics"
                       >
                         <BarChart3 className="h-4 w-4" />
+                        <span className="text-xs font-medium">Stats</span>
                       </button>
                       
                       <button
                         onClick={() => handleViewResponses(survey.id)}
-                        className="p-2 text-gray-400 hover:text-orange-600 hover:bg-orange-50 rounded-md"
+                        className="flex items-center gap-1.5 px-3 py-2 bg-orange-50 text-orange-700 hover:bg-orange-100 hover:text-orange-800 rounded-md border border-orange-200 transition-colors duration-200"
                         title="Ver respostas"
                       >
                         <Users className="h-4 w-4" />
+                        <span className="text-xs font-medium">Ver</span>
                       </button>
                       
                       <button
                         onClick={() => handleEditSurvey(survey.id)}
-                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md"
+                        className="flex items-center gap-1.5 px-3 py-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 hover:text-indigo-800 rounded-md border border-indigo-200 transition-colors duration-200"
                         title="Editar"
                       >
                         <Edit className="h-4 w-4" />
+                        <span className="text-xs font-medium">Editar</span>
                       </button>
                       
                       <button
                         onClick={() => handleToggleActive(survey.id)}
-                        className={`p-2 rounded-md ${
+                        className={`flex items-center gap-1.5 px-3 py-2 rounded-md border transition-colors duration-200 ${
                           survey.isActive
-                            ? 'text-green-600 hover:text-red-600 hover:bg-red-50'
-                            : 'text-gray-400 hover:text-green-600 hover:bg-green-50'
+                            ? 'bg-red-50 text-red-700 hover:bg-red-100 hover:text-red-800 border-red-200'
+                            : 'bg-gray-50 text-gray-700 hover:bg-green-50 hover:text-green-700 border-gray-200'
                         }`}
                         title={survey.isActive ? 'Desativar' : 'Ativar'}
                       >
                         <Eye className="h-4 w-4" />
+                        <span className="text-xs font-medium">
+                          {survey.isActive ? 'Desativar' : 'Ativar'}
+                        </span>
                       </button>
                       
                       {survey.responsesCount > 0 && (
                         <button
                           onClick={() => handleDeleteAllResponses(survey.id, survey.title)}
-                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md"
+                          className="flex items-center gap-1.5 px-3 py-2 bg-red-50 text-red-700 hover:bg-red-100 hover:text-red-800 rounded-md border border-red-200 transition-colors duration-200"
                           title="Excluir todas as respostas"
                         >
                           <Trash2 className="h-4 w-4" />
+                          <span className="text-xs font-medium">Limpar</span>
                         </button>
                       )}
                       
                       <button
                         onClick={() => handleDeleteSurvey(survey.id)}
-                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md"
-                        title="Excluir"
+                        className="flex items-center gap-1.5 px-3 py-2 bg-red-50 text-red-700 hover:bg-red-100 hover:text-red-800 rounded-md border border-red-200 transition-colors duration-200"
+                        title="Excluir questionário"
                       >
                         <Trash2 className="h-4 w-4" />
+                        <span className="text-xs font-medium">Excluir</span>
                       </button>
                     </div>
                   </div>
@@ -379,6 +454,65 @@ const SurveyList: React.FC = () => {
           )}
         </div>
       </main>
+
+      {/* Modal do QR Code */}
+      {qrCodeModal.isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">
+                QR Code - {qrCodeModal.surveyTitle}
+              </h3>
+              <button
+                onClick={closeQRCodeModal}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            
+            <div className="text-center">
+              <div className="mb-4">
+                <img 
+                  src={qrCodeModal.qrCodeDataUrl} 
+                  alt="QR Code" 
+                  className="mx-auto border border-gray-200 rounded-lg"
+                />
+              </div>
+              
+              <div className="mb-4">
+                <p className="text-sm text-gray-600 mb-2">URL do questionário:</p>
+                <div className="bg-gray-50 p-3 rounded-md">
+                  <p className="text-xs text-gray-800 break-all">{qrCodeModal.url}</p>
+                </div>
+              </div>
+              
+              <div className="flex gap-2 justify-center">
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(qrCodeModal.url)
+                    alert('Link copiado para a área de transferência!')
+                  }}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                >
+                  Copiar Link
+                </button>
+                <button
+                  onClick={() => {
+                    const link = document.createElement('a')
+                    link.download = `qr-code-${qrCodeModal.surveyTitle.replace(/\s+/g, '-').toLowerCase()}.png`
+                    link.href = qrCodeModal.qrCodeDataUrl
+                    link.click()
+                  }}
+                  className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                >
+                  Baixar QR Code
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

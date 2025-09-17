@@ -206,6 +206,10 @@ npm run dev
 - [x] Ativação/desativação de questionários
 - [x] Exclusão de questionários
 - [x] Links para visualizar questionários
+- [x] **Botões melhorados** com design claro e textos descritivos
+- [x] **Geração de QR Code** para questionários
+- [x] **Modal de QR Code** com opções de copiar link e baixar imagem
+- [x] **Dropdown de opções** no botão de link (Copiar/QR Code)
 
 ### ✅ API Backend
 - [x] Endpoints para CRUD de questionários
@@ -253,6 +257,7 @@ npm run dev
 - **Tailwind CSS** para estilização
 - **React Router DOM** para navegação
 - **Lucide React** para ícones
+- **QRCode.js** para geração de QR Codes
 
 ### Backend
 - **Node.js** com Express
@@ -342,6 +347,28 @@ npm run dev
 - **State Ideology**: Configure se o governo estadual é de esquerda, centro ou direita
 - **Classificação Automática**: Sistema calcula tendência política baseado nas avaliações
 
+## 📱 Funcionalidades de QR Code
+
+### Geração de QR Code
+- **Acesso fácil**: Dropdown no botão "Link" dos questionários
+- **Modal interativo**: Visualização do QR Code em modal responsivo
+- **Download**: Baixar imagem PNG do QR Code
+- **Cópia rápida**: Copiar link diretamente do modal
+- **Alta qualidade**: QR Codes gerados em 256x256px
+
+### Como usar QR Code
+1. **Acesse** "Meus Questionários" no painel admin
+2. **Passe o mouse** sobre o botão "Link" de qualquer questionário
+3. **Clique** em "Gerar QR Code" no dropdown
+4. **Visualize** o QR Code no modal
+5. **Baixe** a imagem ou **copie** o link conforme necessário
+
+### Casos de uso
+- **Impressão**: Imprimir QR Code em materiais físicos
+- **Apresentações**: Incluir em slides e apresentações
+- **Redes sociais**: Compartilhar em posts e stories
+- **Eventos**: Facilitar acesso em eventos presenciais
+
 ## 📝 Notas de Desenvolvimento
 
 - O sistema está configurado para a empresa "PSB" como exemplo
@@ -353,4 +380,4 @@ npm run dev
 
 **Desenvolvido por Raed** 🚀
 
-*Última atualização: Setembro 2025*
+*Última atualização: 17 de Setembro de 2025*
