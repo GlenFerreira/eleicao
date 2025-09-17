@@ -17,6 +17,14 @@ export default defineConfig({
     alias: {
       '@': path.resolve('./src')
     }
-  }
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html')
+      }
+    }
+  },
+  publicDir: 'public'
 })
 
